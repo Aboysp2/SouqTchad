@@ -1,0 +1,37 @@
+{% extends 'listings/base.html' %}
+
+{% block content %}
+<div class="sidebar">
+    <h3>Catégories</h3>
+    <ul>
+        <li><a href="{% url 'listing_list' %}">Toutes les catégories</a></li>
+        {% for cat in categories %}
+            <li><a href="?category={{ cat.slug }}">{{ cat.name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="content">
+    <form method="get" style="margin-bottom: 20px; display: flex; gap: 10px;">
+        <input type="text" name="q" placeholder="Que recherchez-vous ?" value="{{ request.GET.q }}" class="form-control" style="margin: 0;">
+        <button type="submit" style="background: #0056b3; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Rechercher</button>
+    </form>
+
+    <div class="grid">
+        {% for listing in listings %}
+            <div class="card">
+                {% if listing.image %}
+                    <img src="{{ listing.image.url }}" alt="{{ listing.title }}">
+                {% else %}
+                    <div style="background: #eee; height: 160px; display: flex; align-items: center; justify-content: center; color: #888;">Sans Image</div>
+                {% endif %}
+                <h4 style="margin: 10px 0 5px 0;"><a href="{% url 'listing_detail' listing.pk %}" style="color: #333; text-decoration: none;">{{ listing.title }}</a></h4>
+                <p style="margin: 0; font-weight: bold; color: #28a745;">{{ listing.price }} XAF</p>
+                <p style="margin: 5px 0 0 0;"><small style="color: #666;">📍 {{ listing.city }}</small></p>
+            </div>
+        {% empty %}
+            <p>Aucune annonce trouvée.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
