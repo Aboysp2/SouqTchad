@@ -1,0 +1,21 @@
+{% extends 'listings/base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%;">
+    <h2>{{ listing.title }}</h2>
+    <p style="color: #666;">Publié par <strong>{{ listing.seller.username }}</strong> le {{ listing.created_at|date:"d M Y" }} à {{ listing.city }}</p>
+    
+    {% if listing.image %}
+        <img src="{{ listing.image.url }}" alt="{{ listing.title }}" style="max-width: 100%; max-height: 400px; border-radius: 6px; margin-bottom: 20px;">
+    {% endif %}
+
+    <h3 style="color: #28a745;">Prix : {{ listing.price }} XAF</h3>
+    <hr style="margin: 20px 0;">
+    <h4>Description :</h4>
+    <p style="line-height: 1.6; white-space: pre-line;">{{ listing.description }}</p>
+    
+    <div style="margin-top: 30px;">
+        <a href="{% url 'listing_list' %}" style="color: #0056b3; text-decoration: none;">← Retour aux annonces</a>
+    </div>
+</div>
+{% endblock %}
