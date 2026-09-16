@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: souq_tchad_db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-souqtchad_db}
+      POSTGRES_USER: ${POSTGRES_USER:-souqtchad_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-souqtchad_password_123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-souqtchad_user} -d ${POSTGRES_DB:-souqtchad_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    container_name: souq_tchad_web
+    restart: always
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn core.wsgi:application --bind 0.0.0.0:8000"
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=${DEBUG:-1}
+      - SECRET_KEY=${SECRET_KEY:-default-insecure-key}
+      - DB_NAME=${POSTGRES_DB:-souqtchad_db}
+      - DB_USER=${POSTGRES_USER:-souqtchad_user}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-souqtchad_password_123}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID:-}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY:-}
+      - AWS_STORAGE_BUCKET_NAME=${AWS_STORAGE_BUCKET_NAME:-}
+      - AWS_S3_ENDPOINT_URL=${AWS_S3_ENDPOINT_URL:-}
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
