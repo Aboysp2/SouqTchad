@@ -1,0 +1,15 @@
+{% extends 'listings/base.html' %}
+
+{% block content %}
+<div style="max-width: 400px; margin: 40px auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%;">
+    <h2>Connexion</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" style="width: 100%; background-color: #0056b3; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; font-weight: bold;">Se connecter</button>
+    </form>
+    <p style="margin-top: 15px; font-size: 0.9rem;">
+        Pas encore de compte ? <a href="{% url 'register' %}">Créer un compte</a>.
+    </p>
+</div>
+{% endblock %}
